@@ -1,4 +1,5 @@
 using MongoDB.Driver;
+using Microsoft.Extensions.Configuration;
 
 namespace SecureText.Services
 {
@@ -6,11 +7,12 @@ namespace SecureText.Services
     {
         private readonly IMongoDatabase _database;
 
-        public MongoDbService()
+        public MongoDbService(IConfiguration configuration)
         {
-            var connectionString = "mongodb+srv://taingo2112003:sKDQQdN3BnhXzcE7@securetext.7lxbomu.mongodb.net/?retryWrites=true&w=majority&tls=true&appName=SecureText";
+            var connectionString = configuration.GetConnectionString("MongoDb");
+            var databaseName = configuration["MongoDbSettings:DatabaseName"];
             var client = new MongoClient(connectionString);
-            _database = client.GetDatabase("SecureTextDb"); // tên database bạn muốn
+            _database = client.GetDatabase(databaseName);
         }
 
         public IMongoDatabase GetDatabase()

@@ -2,7 +2,15 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Hello from Azure App Service 🚀</h1>
-    <p>Deploy thành công rồi đó bạn!</p>
-</div>
+<h1>Băm/Mã hóa nội dung</h1>
+
+<form method="post" asp-action="Encrypt">
+    <input type="text" name="inputText" placeholder="Nhập nội dung..." style="width: 300px;" />
+    <button type="submit">Xử lý</button>
+</form>
+
+@if (ViewBag.Result != null)
+{
+    <h2>Kết quả:</h2>
+    <p>@ViewBag.Result</p>
+}
