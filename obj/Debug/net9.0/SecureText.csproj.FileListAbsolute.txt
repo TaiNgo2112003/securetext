@@ -95,3 +95,12 @@ C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\refint\SecureText.dll
 C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\SecureText.pdb
 C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\SecureText.genruntimeconfig.cache
 C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\ref\SecureText.dll
+C:\Users\taing\Desktop\SecureText\bin\Debug\net9.0\DnsClient.dll
+C:\Users\taing\Desktop\SecureText\bin\Debug\net9.0\MongoDB.Bson.dll
+C:\Users\taing\Desktop\SecureText\bin\Debug\net9.0\MongoDB.Driver.dll
+C:\Users\taing\Desktop\SecureText\bin\Debug\net9.0\SharpCompress.dll
+C:\Users\taing\Desktop\SecureText\bin\Debug\net9.0\Snappier.dll
+C:\Users\taing\Desktop\SecureText\bin\Debug\net9.0\ZstdSharp.dll
+C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\SecureText.csproj.AssemblyReference.cache
+C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\SecureText.sourcelink.json
+C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\SecureText.csproj.Up2Date

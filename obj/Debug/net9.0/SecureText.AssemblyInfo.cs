@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SecureText")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0cac335aea79be9dcc854d11cfcdb7237b1c005e")]
 [assembly: System.Reflection.AssemblyProductAttribute("SecureText")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SecureText")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
