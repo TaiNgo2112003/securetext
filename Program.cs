@@ -3,7 +3,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<SecureText.Services.MongoDbService>();
-
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian hết hạn phiên
+    options.Cookie.HttpOnly = true; // Chỉ cho phép truy cập cookie từ máy chủ
+    options.Cookie.IsEssential = true; // Cookie cần thiết cho ứng dụng
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -16,6 +22,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseSession();
 
 app.UseAuthorization();
 
