@@ -1,750 +1,359 @@
-﻿<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Công cụ Mã hóa/Giải mã</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-encrypt: #4361ee;
-            --secondary-encrypt: #3f37c9;
-            --primary-decrypt: #4cc9f0;
-            --secondary-decrypt: #4895ef;
-            --error-color: #f72585;
-            --success-color: #4ad66d;
-            --warning-color: #f8961e;
-            --light-color: #f8f9fa;
-            --dark-color: #212529;
-            --gray-color: #adb5bd;
-        }
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f7ff;
-            padding: 20px;
-        }
-        
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        /* Tab điều hướng */
-        .tab-container {
-            display: flex;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-        }
-        
-        .tab-button {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            background: none;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .tab-button.active {
-            background: linear-gradient(135deg, var(--primary-encrypt), var(--secondary-encrypt));
-            color: white;
-        }
-        
-        .tab-button.decrypt.active {
-            background: linear-gradient(135deg, var(--primary-decrypt), var(--secondary-decrypt));
-        }
-        
-        /* Card chức năng */
-        .crypto-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            display: none;
-        }
-        
-        .crypto-card.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        .card-header {
-            padding: 25px;
-            color: white;
-        }
-        
-        .encrypt .card-header {
-            background: linear-gradient(135deg, var(--primary-encrypt), var(--secondary-encrypt));
-        }
-        
-        .decrypt .card-header {
-            background: linear-gradient(135deg, var(--primary-decrypt), var(--secondary-decrypt));
-        }
-        
-        .card-header h2 {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 24px;
-        }
-        
-        .card-header p {
-            margin-top: 10px;
-            opacity: 0.9;
-            font-size: 14px;
-        }
-        
-        .card-body {
-            padding: 25px;
-        }
-        
-        /* Form elements */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary-encrypt);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-            outline: none;
-        }
-        
-        .decrypt .form-control:focus {
-            border-color: var(--primary-decrypt);
-            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
-        }
-        
-        textarea.form-control {
-            min-height: 120px;
-            resize: vertical;
-        }
-        
-        /* Key management */
-        .key-management {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .input-with-btn {
-            position: relative;
-            display: flex;
-        }
-        
-        .input-with-btn .form-control {
-            flex: 1;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-        }
-        
-        .generate-btn {
-            padding: 0 15px;
-            background: var(--success-color);
-            color: white;
-            border: none;
-            border-top-right-radius: 8px;
-            border-bottom-right-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .generate-btn:hover {
-            background: #3aa955;
-        }
-        
-        .key-info {
-            font-size: 13px;
-            color: var(--gray-color);
-            margin-top: 5px;
-        }
-        
-        /* Action buttons */
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 25px;
-        }
-        
-        .crypto-btn {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .encrypt-btn {
-            background: var(--primary-encrypt);
-            color: white;
-        }
-        
-        .encrypt-btn:hover {
-            background: var(--secondary-encrypt);
-        }
-        
-        .decrypt-btn {
-            background: var(--primary-decrypt);
-            color: white;
-        }
-        
-        .decrypt-btn:hover {
-            background: var(--secondary-decrypt);
-        }
-        
-        /* Result section */
-        .result-container {
-            margin-top: 30px;
-            display: none;
-        }
-        
-        .result-box {
-            position: relative;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            margin-top: 15px;
-        }
-        
-        .result-output {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-family: 'Courier New', Courier, monospace;
-        }
-        
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--dark-color);
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .copy-btn:hover {
-            background: rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Algorithm info */
-        .algorithm-info {
-            padding: 15px;
-            background-color: #f0f4ff;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        
-        .decrypt .algorithm-info {
-            background-color: #f0f9ff;
-        }
-        
-        /* Error message */
-        .error-message {
-            margin-top: 20px;
-            padding: 12px 15px;
-            background: #fff5f7;
-            border: 1px solid var(--error-color);
-            border-radius: 8px;
-            color: var(--error-color);
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        /* Animations */
-        @@keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Responsive */
-        @@media (max-width: 768px) {
-            .key-management {
-                grid-template-columns: 1fr;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .card-header h2 {
-                font-size: 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="app-container">
-        <div class="tab-container">
-            <button class="tab-button encrypt active" onclick="switchTab('encrypt')">
-                <i class="fas fa-lock"></i> Mã hóa
-            </button>
-            <button class="tab-button decrypt" onclick="switchTab('decrypt')">
-                <i class="fas fa-lock-open"></i> Giải mã
-            </button>
-        </div>
-        
-        <!-- Trang Mã hóa -->
-        <div id="encrypt-card" class="crypto-card encrypt active">
-            <div class="card-header">
-                <h2><i class="fas fa-shield-alt"></i> Mã hóa dữ liệu</h2>
-                <p>Bảo vệ thông tin nhạy cảm của bạn bằng các thuật toán mã hóa mạnh mẽ</p>
-            </div>
-            
-            <div class="card-body">
-                <div class="algorithm-info" id="encrypt-algo-info">
-                    <strong><i class="fas fa-info-circle"></i> Hướng dẫn:</strong> Chọn thuật toán và nhập văn bản cần mã hóa. Hệ thống sẽ tự động hướng dẫn các thông số cần thiết.
+﻿@{
+    ViewData["Title"] = "Encryption/Decryption Tool";
+}
+
+<div class="container-fluid crypto-tool">
+    <h1 class="text-center mb-5">@ViewData["Title"]</h1>
+
+    <div class="row">
+        <!-- Encryption Section -->
+        <div class="col-lg-6">
+            <div class="crypto-section encrypt-section">
+                <div class="section-header">
+                    <i class="fas fa-lock"></i>
+                    <h2>Encryption</h2>
                 </div>
                 
-                <div class="form-group">
-                    <label for="encrypt-algorithm">Thuật toán mã hóa:</label>
-                    <select id="encrypt-algorithm" class="form-control" onchange="updateAlgorithmInfo('encrypt')">
-                        <option value="AES">AES (Advanced Encryption Standard)</option>
-                        <option value="DES">DES (Data Encryption Standard)</option>
-                        <option value="TripleDES">Triple DES (3DES)</option>
-                        <option value="RC4">RC4 (Rivest Cipher 4)</option>
+                <div class="algorithm-selector mb-4">
+                    <select id="encryptAlgorithm" class="form-select">
+                        <option value="aes">AES</option>
+                        <option value="des">DES</option>
+                        <option value="tripleDes">Triple DES</option>
                     </select>
                 </div>
                 
-                <div class="form-group">
-                    <label for="plain-text">Văn bản cần mã hóa:</label>
-                    <textarea id="plain-text" class="form-control" placeholder="Nhập văn bản bạn muốn mã hóa..."></textarea>
+                <div class="form-group mb-3">
+                    <label for="plainText" class="form-label">Plain Text</label>
+                    <textarea id="plainText" class="form-control" rows="4" placeholder="Enter text to encrypt"></textarea>
                 </div>
                 
-                <div class="key-management">
-                    <div class="form-group">
-                        <label for="encrypt-key">Khóa mã hóa:</label>
-                        <div class="input-with-btn">
-                            <input type="text" id="encrypt-key" class="form-control" 
-                                   placeholder="Nhập khóa ở dạng hex (ví dụ: 0123456789ABCDEF)" 
-                                   pattern="[0-9a-fA-F]+">
-                            <button class="generate-btn" onclick="generateKey('encrypt')">
-                                <i class="fas fa-key"></i> Tạo
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="encryptKey" class="form-label">Key (Base64)</label>
+                        <div class="input-group">
+                            <input type="text" id="encryptKey" class="form-control" value="@ViewBag.AesKey">
+                            <button class="btn btn-outline-secondary generate-key" type="button" title="Generate Key">
+                                <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>
-                        <div class="key-info" id="encrypt-key-info">AES-256 yêu cầu khóa 64 ký tự hex (256-bit)</div>
                     </div>
-                    
-                    <div class="form-group" id="encrypt-iv-group">
-                        <label for="encrypt-iv">Vector khởi tạo (IV):</label>
-                        <div class="input-with-btn">
-                            <input type="text" id="encrypt-iv" class="form-control" 
-                                   placeholder="Nhập IV ở dạng hex (ví dụ: FEDCBA9876543210)" 
-                                   pattern="[0-9a-fA-F]+">
-                            <button class="generate-btn" onclick="generateIV('encrypt')">
-                                <i class="fas fa-random"></i> Tạo
+                    <div class="col-md-6 mb-3">
+                        <label for="encryptIV" class="form-label">IV (Base64)</label>
+                        <div class="input-group">
+                            <input type="text" id="encryptIV" class="form-control" value="@ViewBag.AesIV">
+                            <button class="btn btn-outline-secondary generate-iv" type="button" title="Generate IV">
+                                <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>
-                        <div class="key-info" id="encrypt-iv-info">AES yêu cầu IV 32 ký tự hex (128-bit)</div>
                     </div>
                 </div>
                 
-                <div class="action-buttons">
-                    <button class="crypto-btn encrypt-btn" onclick="performEncryption()">
-                        <i class="fas fa-lock"></i> Mã hóa
-                    </button>
-                </div>
+                <button id="encryptBtn" class="btn btn-primary w-100 py-2">
+                    <i class="fas fa-lock me-2"></i>Encrypt
+                </button>
                 
-                <div class="result-container" id="encrypt-result">
-                    <label>Kết quả mã hóa:</label>
-                    <div class="result-box">
-                        <pre class="result-output" id="encrypted-output"></pre>
-                        <button class="copy-btn" onclick="copyResult('encrypted-output')">
-                            <i class="far fa-copy"></i>
+                <div id="encryptResult" class="result-container mt-4" style="display:none;">
+                    <div class="result-header d-flex justify-content-between align-items-center">
+                        <strong>Encrypted Result</strong>
+                        <button class="btn btn-sm btn-outline-secondary copy-result" data-target="encryptResultText">
+                            <i class="fas fa-copy me-1"></i>Copy
                         </button>
                     </div>
+                    <div id="encryptResultText" class="result-content"></div>
                 </div>
             </div>
         </div>
         
-        <!-- Trang Giải mã -->
-        <div id="decrypt-card" class="crypto-card decrypt">
-            <div class="card-header">
-                <h2><i class="fas fa-unlock-alt"></i> Giải mã dữ liệu</h2>
-                <p>Khôi phục thông tin đã được mã hóa bằng khóa và thuật toán tương ứng</p>
-            </div>
-            
-            <div class="card-body">
-                <div class="algorithm-info" id="decrypt-algo-info">
-                    <strong><i class="fas fa-info-circle"></i> Hướng dẫn:</strong> Chọn thuật toán đã dùng để mã hóa và nhập dữ liệu đã mã hóa cùng khóa tương ứng.
+        <!-- Decryption Section -->
+        <div class="col-lg-6">
+            <div class="crypto-section decrypt-section">
+                <div class="section-header">
+                    <i class="fas fa-lock-open"></i>
+                    <h2>Decryption</h2>
                 </div>
                 
-                <div class="form-group">
-                    <label for="decrypt-algorithm">Thuật toán giải mã:</label>
-                    <select id="decrypt-algorithm" class="form-control" onchange="updateAlgorithmInfo('decrypt')">
-                        <option value="AES">AES (Advanced Encryption Standard)</option>
-                        <option value="DES">DES (Data Encryption Standard)</option>
-                        <option value="TripleDES">Triple DES (3DES)</option>
-                        <option value="RC4">RC4 (Rivest Cipher 4)</option>
+                <div class="algorithm-selector mb-4">
+                    <select id="decryptAlgorithm" class="form-select">
+                        <option value="aes">AES</option>
+                        <option value="des">DES</option>
+                        <option value="tripleDes">Triple DES</option>
                     </select>
                 </div>
                 
-                <div class="form-group">
-                    <label for="cipher-text">Dữ liệu cần giải mã:</label>
-                    <textarea id="cipher-text" class="form-control" placeholder="Nhập dữ liệu đã mã hóa (dạng hex hoặc base64)..."></textarea>
+                <div class="form-group mb-3">
+                    <label for="cipherText" class="form-label">Cipher Text</label>
+                    <textarea id="cipherText" class="form-control" rows="4" placeholder="Enter text to decrypt"></textarea>
                 </div>
                 
-                <div class="key-management">
-                    <div class="form-group">
-                        <label for="decrypt-key">Khóa giải mã:</label>
-                        <div class="input-with-btn">
-                            <input type="text" id="decrypt-key" class="form-control" 
-                                   placeholder="Nhập khóa ở dạng hex (phải khớp với khóa mã hóa)" 
-                                   pattern="[0-9a-fA-F]+">
-                            <button class="generate-btn" onclick="generateKey('decrypt')">
-                                <i class="fas fa-key"></i> Tạo
-                            </button>
-                        </div>
-                        <div class="key-info" id="decrypt-key-info">AES-256 yêu cầu khóa 64 ký tự hex (256-bit)</div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="decryptKey" class="form-label">Key (Base64)</label>
+                        <input type="text" id="decryptKey" class="form-control" value="@ViewBag.AesKey">
                     </div>
-                    
-                    <div class="form-group" id="decrypt-iv-group">
-                        <label for="decrypt-iv">Vector khởi tạo (IV):</label>
-                        <div class="input-with-btn">
-                            <input type="text" id="decrypt-iv" class="form-control" 
-                                   placeholder="Nhập IV ở dạng hex (phải khớp với IV mã hóa)" 
-                                   pattern="[0-9a-fA-F]+">
-                            <button class="generate-btn" onclick="generateIV('decrypt')">
-                                <i class="fas fa-random"></i> Tạo
-                            </button>
-                        </div>
-                        <div class="key-info" id="decrypt-iv-info">AES yêu cầu IV 32 ký tự hex (128-bit)</div>
+                    <div class="col-md-6 mb-3">
+                        <label for="decryptIV" class="form-label">IV (Base64)</label>
+                        <input type="text" id="decryptIV" class="form-control" value="@ViewBag.AesIV">
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="input-format">Định dạng đầu vào:</label>
-                    <select id="input-format" class="form-control">
-                        <option value="hex">Hex</option>
-                        <option value="base64">Base64</option>
-                    </select>
-                </div>
+                <button id="decryptBtn" class="btn btn-success w-100 py-2">
+                    <i class="fas fa-lock-open me-2"></i>Decrypt
+                </button>
                 
-                <div class="action-buttons">
-                    <button class="crypto-btn decrypt-btn" onclick="performDecryption()">
-                        <i class="fas fa-unlock"></i> Giải mã
-                    </button>
-                </div>
-                
-                <div class="result-container" id="decrypt-result">
-                    <label>Kết quả giải mã:</label>
-                    <div class="result-box">
-                        <pre class="result-output" id="decrypted-output"></pre>
-                        <button class="copy-btn" onclick="copyResult('decrypted-output')">
-                            <i class="far fa-copy"></i>
+                <div id="decryptResult" class="result-container mt-4" style="display:none;">
+                    <div class="result-header d-flex justify-content-between align-items-center">
+                        <strong>Decrypted Result</strong>
+                        <button class="btn btn-sm btn-outline-secondary copy-result" data-target="decryptResultText">
+                            <i class="fas fa-copy me-1"></i>Copy
                         </button>
                     </div>
+                    <div id="decryptResultText" class="result-content"></div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --accent-color: #4895ef;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --success-color: #4cc9f0;
+        --danger-color: #f72585;
+    }
+    
+    body {
+        background-color: #f5f7fb;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .crypto-tool {
+        max-width: 1200px;
+        padding: 2rem;
+    }
+    
+    .crypto-section {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        padding: 2rem;
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .crypto-section:hover {
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    }
+    
+    .encrypt-section {
+        border-top: 4px solid var(--primary-color);
+    }
+    
+    .decrypt-section {
+        border-top: 4px solid var(--success-color);
+    }
+    
+    .section-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        color: var(--dark-color);
+    }
+    
+    .section-header i {
+        font-size: 1.8rem;
+        margin-right: 1rem;
+    }
+    
+    .section-header h2 {
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    .algorithm-selector select {
+        border-radius: 8px;
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+        font-weight: 500;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+    }
+    
+    textarea.form-control {
+        min-height: 120px;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        transition: all 0.3s;
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+    
+    .btn-success {
+        background-color: var(--success-color);
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        transition: all 0.3s;
+    }
+    
+    .btn-success:hover {
+        background-color: #3aa8d8;
+        transform: translateY(-2px);
+    }
+    
+    .result-container {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.25rem;
+        border-left: 4px solid var(--accent-color);
+    }
+    
+    .result-header {
+        margin-bottom: 0.75rem;
+    }
+    
+    .result-content {
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        font-family: 'Courier New', Courier, monospace;
+        color: var(--dark-color);
+    }
+    
+    .copy-result {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .generate-key, .generate-iv {
+        border-radius: 0 8px 8px 0 !important;
+    }
+    
+    @@media (max-width: 992px) {
+        .crypto-section {
+            margin-bottom: 2rem;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
     <script>
-        // Chuyển đổi giữa các tab
-        function switchTab(tab) {
-            document.getElementById('encrypt-card').classList.remove('active');
-            document.getElementById('decrypt-card').classList.remove('active');
-            document.querySelector('.tab-button.encrypt').classList.remove('active');
-            document.querySelector('.tab-button.decrypt').classList.remove('active');
-            
-            document.getElementById(tab + '-card').classList.add('active');
-            document.querySelector('.tab-button.' + tab).classList.add('active');
-        }
-        
-        // Cập nhật thông tin thuật toán
-        function updateAlgorithmInfo(type) {
-            const algo = document.getElementById(type + '-algorithm').value;
-            const keyInfo = document.getElementById(type + '-key-info');
-            const ivGroup = document.getElementById(type + '-iv-group');
-            const ivInfo = document.getElementById(type + '-iv-info');
-            const algoInfo = document.getElementById(type + '-algo-info');
-            
-            // Cập nhật thông tin khóa
-            let keyLength, keyExample;
-            switch(algo) {
-                case 'AES':
-                    keyLength = '32/48/64 (128/192/256-bit)';
-                    keyExample = '0123456789ABCDEF0123456789ABCDEF (AES-128)';
-                    break;
-                case 'DES':
-                    keyLength = '16 (64-bit)';
-                    keyExample = '0123456789ABCDEF';
-                    break;
-                case 'TripleDES':
-                    keyLength = '48 (192-bit)';
-                    keyExample = '0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF';
-                    break;
-                case 'RC4':
-                    keyLength = '2-512 (1-256 byte)';
-                    keyExample = '0123456789ABCDEF';
-                    break;
-            }
-            
-            keyInfo.textContent = `${algo} yêu cầu khóa ${keyLength} ký tự hex. Ví dụ: ${keyExample}`;
-            
-            // Cập nhật IV
-            if (algo === 'RC4') {
-                ivGroup.style.display = 'none';
-            } else {
-                ivGroup.style.display = 'block';
-                const ivLength = algo === 'AES' ? '32 (128-bit)' : '16 (64-bit)';
-                const ivExample = algo === 'AES' ? 'FEDCBA9876543210FEDCBA9876543210' : 'FEDCBA9876543210';
-                ivInfo.textContent = `${algo} yêu cầu IV ${ivLength} ký tự hex. Ví dụ: ${ivExample}`;
-            }
-            
-            // Cập nhật thông tin thuật toán
-            let algoDescription = '';
-            switch(algo) {
-                case 'AES':
-                    algoDescription = 'AES là thuật toán mã hóa đối xứng tiêu chuẩn, an toàn và hiệu quả.';
-                    break;
-                case 'DES':
-                    algoDescription = 'DES là thuật toán mã hóa đối xứng cũ, chỉ nên dùng cho mục đích học tập.';
-                    break;
-                case 'TripleDES':
-                    algoDescription = '3DES là phiên bản mạnh hơn của DES, áp dụng DES 3 lần với 2-3 khóa khác nhau.';
-                    break;
-                case 'RC4':
-                    algoDescription = 'RC4 là thuật toán mã hóa dòng, nhanh nhưng có một số điểm yếu bảo mật.';
-                    break;
-            }
-            
-            algoInfo.innerHTML = `<strong><i class="fas fa-info-circle"></i> ${algo}:</strong> ${algoDescription} ${type === 'encrypt' ? 
-                'Đảm bảo giữ khóa và IV an toàn để có thể giải mã sau này.' : 
-                'Nhập chính xác thuật toán, khóa và IV đã dùng để mã hóa.'}`;
-        }
-        
-        // Tạo khóa ngẫu nhiên
-        function generateKey(type) {
-            const algo = document.getElementById(type + '-algorithm').value;
-            let keyLength;
-            
-            switch(algo) {
-                case 'AES': keyLength = 32; break; // AES-256 mặc định
-                case 'DES': keyLength = 16; break; // 64-bit
-                case 'TripleDES': keyLength = 48; break; // 192-bit
-                case 'RC4': keyLength = 32; break; // 128-bit mặc định
-            }
-            
-            const key = generateRandomHex(keyLength);
-            document.getElementById(type + '-key').value = key;
-        }
-        
-        // Tạo IV ngẫu nhiên
-        function generateIV(type) {
-            const algo = document.getElementById(type + '-algorithm').value;
-            const ivLength = algo === 'AES' ? 32 : 16; // AES: 128-bit, DES/3DES: 64-bit
-            
-            document.getElementById(type + '-iv').value = generateRandomHex(ivLength);
-        }
-        
-        // Hàm tạo hex ngẫu nhiên
-        function generateRandomHex(bytes) {
-            const buffer = new Uint8Array(bytes/2);
-            window.crypto.getRandomValues(buffer);
-            return Array.from(buffer, byte => 
-                byte.toString(16).padStart(2, '0')).join('').toUpperCase();
-        }
-        
-        // Thực hiện mã hóa
-        function performEncryption() {
-            const algo = document.getElementById('encrypt-algorithm').value;
-            const plainText = document.getElementById('plain-text').value;
-            const key = document.getElementById('encrypt-key').value;
-            const iv = document.getElementById('encrypt-iv').value;
-            
-            // Validate input
-            if (!plainText) {
-                showError('Vui lòng nhập văn bản cần mã hóa', 'encrypt');
-                return;
-            }
-            
-            if (!key || !isValidHex(key)) {
-                showError('Khóa không hợp lệ. Vui lòng nhập đúng định dạng hex', 'encrypt');
-                return;
-            }
-            
-            if (algo !== 'RC4' && (!iv || !isValidHex(iv))) {
-                showError('IV không hợp lệ. Vui lòng nhập đúng định dạng hex', 'encrypt');
-                return;
-            }
-            
-            // Gọi API mã hóa (giả lập)
-            setTimeout(() => {
-                let result;
-                switch(algo) {
-                    case 'AES':
-                    case 'DES':
-                    case 'TripleDES':
-                        result = `[${algo} encrypted data - Base64]\n` + 
-                                 btoa(`Encrypted:${plainText}`).match(/.{1,64}/g).join('\n');
-                        break;
-                    case 'RC4':
-                        result = `[RC4 encrypted data - Hex]\n` + 
-                                 Array.from(plainText).map(c => 
-                                     c.charCodeAt(0).toString(16).padStart(2, '0').toUpperCase()
-                                 ).join(' ').match(/.{1,48}/g).join('\n');
-                        break;
-                }
-                
-                document.getElementById('encrypted-output').textContent = result;
-                document.getElementById('encrypt-result').style.display = 'block';
-                
-                // Cuộn xuống kết quả
-                document.getElementById('encrypt-result').scrollIntoView({ behavior: 'smooth' });
-                
-            }, 500);
-        }
-        
-        // Thực hiện giải mã
-        function performDecryption() {
-            const algo = document.getElementById('decrypt-algorithm').value;
-            const cipherText = document.getElementById('cipher-text').value.trim();
-            const key = document.getElementById('decrypt-key').value;
-            const iv = document.getElementById('decrypt-iv').value;
-            const format = document.getElementById('input-format').value;
-            
-            // Validate input
-            if (!cipherText) {
-                showError('Vui lòng nhập dữ liệu cần giải mã', 'decrypt');
-                return;
-            }
-            
-            if (!key || !isValidHex(key)) {
-                showError('Khóa không hợp lệ. Vui lòng nhập đúng định dạng hex', 'decrypt');
-                return;
-            }
-            
-            if (algo !== 'RC4' && (!iv || !isValidHex(iv))) {
-                showError('IV không hợp lệ. Vui lòng nhập đúng định dạng hex', 'decrypt');
-                return;
-            }
-            
-            // Gọi API giải mã (giả lập)
-            setTimeout(() => {
-                let result;
-                if (format === 'hex') {
-                    // Giả lập giải mã hex
-                    try {
-                        const hexPairs = cipherText.match(/.{1,2}/g);
-                        const bytes = hexPairs.map(pair => parseInt(pair, 16));
-                        result = `[${algo} decrypted text]\n` + 
-                                 bytes.map(byte => String.fromCharCode(byte)).join('');
-                    } catch {
-                        result = 'Lỗi: Dữ liệu hex không hợp lệ';
-                    }
-                } else {
-                    // Giả lập giải mã base64
-                    try {
-                        result = `[${algo} decrypted text]\n` + 
-                                 atob(cipherText).replace('Encrypted:', '');
-                    } catch {
-                        result = 'Lỗi: Dữ liệu base64 không hợp lệ';
-                    }
-                }
-                
-                document.getElementById('decrypted-output').textContent = result;
-                document.getElementById('decrypt-result').style.display = 'block';
-                
-                // Cuộn xuống kết quả
-                document.getElementById('decrypt-result').scrollIntoView({ behavior: 'smooth' });
-                
-            }, 500);
-        }
-        
-        // Kiểm tra hex hợp lệ
-        function isValidHex(str) {
-            return /^[0-9a-fA-F]+$/.test(str);
-        }
-        
-        // Hiển thị thông báo lỗi
-        function showError(message, type) {
-            // Xóa các thông báo lỗi cũ
-            const oldErrors = document.querySelectorAll(`.${type} .error-message`);
-            oldErrors.forEach(err => err.remove());
-            
-            // Tạo thông báo lỗi mới
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message';
-            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
-            
-            // Thêm vào trước nút thực hiện
-            const actionButtons = document.querySelector(`.${type} .action-buttons`);
-            actionButtons.parentNode.insertBefore(errorDiv, actionButtons);
-            
-            // Cuộn đến lỗi
-            errorDiv.scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        // Sao chép kết quả
-        function copyResult(elementId) {
-            const result = document.getElementById(elementId);
-            navigator.clipboard.writeText(result.textContent)
-                .then(() => {
-                    const copyBtn = result.nextElementSibling;
-                    copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+        $(document).ready(function() {
+            // Copy result functionality
+            $('.copy-result').click(function() {
+                const targetId = $(this).data('target');
+                const text = $('#' + targetId).text();
+                navigator.clipboard.writeText(text).then(() => {
+                    $(this).html('<i class="fas fa-check me-1"></i>Copied!');
                     setTimeout(() => {
-                        copyBtn.innerHTML = '<i class="far fa-copy"></i>';
+                        $(this).html('<i class="fas fa-copy me-1"></i>Copy');
                     }, 2000);
                 });
-        }
-        
-        // Khởi tạo thông tin thuật toán
-        document.addEventListener('DOMContentLoaded', function() {
-            updateAlgorithmInfo('encrypt');
-            updateAlgorithmInfo('decrypt');
+            });
+            
+            // Generate random key
+            $('.generate-key').click(function() {
+                const algorithm = $(this).closest('.crypto-section').hasClass('encrypt-section') 
+                    ? $('#encryptAlgorithm').val() 
+                    : $('#decryptAlgorithm').val();
+                const keySize = algorithm === 'aes' ? 32 : (algorithm === 'des' ? 8 : 24);
+                const randomKey = generateRandomBase64(keySize);
+                $(this).closest('.input-group').find('input').val(randomKey);
+            });
+            
+            // Generate random IV
+            $('.generate-iv').click(function() {
+                const randomIV = generateRandomBase64(16); // IV is typically 16 bytes
+                $(this).closest('.input-group').find('input').val(randomIV);
+            });
+            
+            // Encrypt button click
+            $('#encryptBtn').click(function() {
+                const algorithm = $('#encryptAlgorithm').val();
+                const text = $('#plainText').val();
+                const key = $('#encryptKey').val();
+                const iv = $('#encryptIV').val();
+                
+                if (!text) {
+                    alert('Please enter text to encrypt');
+                    return;
+                }
+                
+                processCrypto(algorithm, 'encrypt', text, key, iv, 'encryptResultText', 'encryptResult');
+            });
+            
+            // Decrypt button click
+            $('#decryptBtn').click(function() {
+                const algorithm = $('#decryptAlgorithm').val();
+                const text = $('#cipherText').val();
+                const key = $('#decryptKey').val();
+                const iv = $('#decryptIV').val();
+                
+                if (!text) {
+                    alert('Please enter text to decrypt');
+                    return;
+                }
+                
+                processCrypto(algorithm, 'decrypt', text, key, iv, 'decryptResultText', 'decryptResult');
+            });
+            
+            // Sync algorithm selection
+            $('#encryptAlgorithm').change(function() {
+                $('#decryptAlgorithm').val($(this).val());
+            });
+            
+            $('#decryptAlgorithm').change(function() {
+                $('#encryptAlgorithm').val($(this).val());
+            });
+            
+            function generateRandomBase64(length) {
+                const randomValues = new Uint8Array(length);
+                crypto.getRandomValues(randomValues);
+                return btoa(String.fromCharCode.apply(null, randomValues));
+            }
+            
+            function processCrypto(algorithm, action, text, key, iv, resultTextId, resultContainerId) {
+                const endpoint = `/Home/Process${algorithm.charAt(0).toUpperCase() + algorithm.slice(1)}`;
+                
+                $.ajax({
+                    url: endpoint,
+                    type: 'POST',
+                    data: {
+                        action: action,
+                        text: text,
+                        key: key,
+                        iv: iv
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $('#' + resultTextId).text(response.result);
+                            $('#' + resultContainerId).show();
+                        } else {
+                            alert('Error: ' + response.error);
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred: ' + xhr.responseText);
+                    }
+                });
+            }
         });
     </script>
-</body>
-</html>
+}

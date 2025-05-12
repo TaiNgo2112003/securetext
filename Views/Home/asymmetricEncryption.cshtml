@@ -1,0 +1,193 @@
+@{
+    ViewData["Title"] = "RSA Encryption/Decryption";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">RSA Asymmetric Encryption Demo</h2>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Key Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Public Key (XML Format)</label>
+                        <textarea id="publicKey" class="form-control" rows="5" readonly>@ViewBag.RSAPublicKey</textarea>
+                        <button class="btn btn-sm btn-outline-secondary mt-2" onclick="copyToClipboard('publicKey')">Copy Public Key</button>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label>Private Key (XML Format)</label>
+                        <textarea id="privateKey" class="form-control" rows="5" readonly>@ViewBag.PrivateKeyPEM</textarea>
+                        <button class="btn btn-sm btn-outline-secondary mt-2" onclick="copyToClipboard('privateKey')">Copy Private Key</button>
+                        <div class="alert alert-warning mt-2">
+                            <i class="fas fa-exclamation-triangle"></i> Keep your private key secure! Never share it publicly.
+                        </div>
+                    </div>
+                    <div class="form-group mt-3">
+                        <button class="btn btn-danger" onclick="generateNewKeys()">
+                            <i class="fas fa-sync-alt"></i> Generate New Keys
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Encryption/Decryption</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Action</label>
+                        <select id="actionType" class="form-control">
+                            <option value="encrypt">Encrypt</option>
+                            <option value="decrypt">Decrypt</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Input Text</label>
+                        <textarea id="inputText" class="form-control" rows="3" placeholder="Enter text to encrypt or decrypt"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Result</label>
+                        <textarea id="resultText" class="form-control" rows="3" readonly></textarea>
+                    </div>
+
+                    <button id="processBtn" class="btn btn-primary mt-2">
+                        <i class="fas fa-cog"></i> Process
+                    </button>
+                    <button id="clearBtn" class="btn btn-outline-secondary mt-2">
+                        <i class="fas fa-broom"></i> Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Xử lý khi nhấn nút Process
+            $('#processBtn').click(function() {
+                const action = $('#actionType').val();
+                const text = $('#inputText').val().trim();
+                const publicKey = $('#publicKey').val().trim();
+
+                if (!text) {
+                    alert('Please enter some text to process');
+                    return;
+                }
+
+                if (action === 'encrypt' && !publicKey) {
+                    alert('Public key is required for encryption');
+                    return;
+                }
+
+                // Hiển thị loading
+                $(this).html('<i class="fas fa-spinner fa-spin"></i> Processing...').prop('disabled', true);
+
+                // Gọi API
+                $.ajax({
+                    url: '/home/ProcessRSA',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        action: action,
+                        text: text,
+                        publicKeyXml: publicKey
+                    }),
+                    success: function(response) {
+                        if (response.error) {
+                            showError(response.error);
+                        } else {
+                            $('#resultText').val(response.result);
+                        }
+                    },
+                    error: function(xhr) {
+                        try {
+                            const err = JSON.parse(xhr.responseText);
+                            showError(err.error || 'An unknown error occurred');
+                        } catch {
+                            showError('Failed to process request');
+                        }
+                    },
+                    complete: function() {
+                        $('#processBtn').html('<i class="fas fa-cog"></i> Process').prop('disabled', false);
+                    }
+                });
+            });
+
+            // Xử lý khi nhấn nút Clear
+            $('#clearBtn').click(function() {
+                $('#inputText').val('');
+                $('#resultText').val('');
+            });
+
+            // Thay đổi action type
+            $('#actionType').change(function() {
+                const action = $(this).val();
+                const placeholder = action === 'encrypt' 
+                    ? 'Enter plain text to encrypt' 
+                    : 'Enter base64 cipher text to decrypt';
+                
+                $('#inputText').attr('placeholder', placeholder);
+            });
+        });
+
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            element.select();
+            document.execCommand('copy');
+            
+            // Hiển thị thông báo
+            const originalText = $(`#${elementId}`).val();
+            $(`#${elementId}`).val('Copied to clipboard!');
+            setTimeout(() => {
+                $(`#${elementId}`).val(originalText);
+            }, 1000);
+        }
+
+        function generateNewKeys() {
+            if (confirm('Are you sure you want to generate new keys? This will invalidate your current keys and any encrypted data will no longer be decryptable.')) {
+                $.ajax({
+                    url: '/home/GenerateNewKeys',
+                    type: 'POST',
+                    success: function(response) {
+                        if (response.publicKey && response.privateKey) {
+                            $('#publicKey').val(response.publicKey);
+                            $('#privateKey').val(response.privateKey);
+                            alert('New keys generated successfully!');
+                        }
+                    },
+                    error: function() {
+                        showError('Failed to generate new keys');
+                    }
+                });
+            }
+        }
+
+        function showError(message) {
+            // Có thể thay bằng toast notification đẹp hơn
+            alert(`Error: ${message}`);
+        }
+    </script>
+
+    <style>
+        textarea {
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .alert {
+            font-size: 0.9em;
+        }
+    </style>
+}

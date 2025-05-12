@@ -17,7 +17,6 @@ C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\SecureText.RazorAssemblyInfo.
 C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\scopedcss\bundle\SecureText.styles.css
 C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\scopedcss\projectbundle\SecureText.bundle.scp.css
-C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\compressed\h0c5edor2r-b9sayid5wm.gz
 C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\compressed\vank3rvkp2-61n19gt1b8.gz
 C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\compressed\qxaw51404z-xtxxf3hu2r.gz
 C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\compressed\eab8v10srh-bqjiyaj88i.gz
@@ -104,3 +103,4 @@ C:\Users\taing\Desktop\SecureText\bin\Debug\net9.0\ZstdSharp.dll
 C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\SecureText.csproj.AssemblyReference.cache
 C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\SecureText.sourcelink.json
 C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\SecureText.csproj.Up2Date
+C:\Users\taing\Desktop\SecureText\obj\Debug\net9.0\compressed\h0c5edor2r-3y8m7uxm6z.gz
