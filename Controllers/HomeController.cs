@@ -23,10 +23,10 @@ namespace SecureText.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            // if (HttpContext.Session.GetString("UserName") == null)
-            // {
-            //     return RedirectToAction("SignUp");
-            // }
+            if (HttpContext.Session.GetString("UserName") == null)
+            {
+                return RedirectToAction("SignUp");
+            }
             ViewBag.AesKey = GenerateRandomString(16);
             ViewBag.AesIV = GenerateRandomString(16);
             ViewBag.DesKey = GenerateRandomString(8);
